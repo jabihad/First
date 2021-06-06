@@ -2,12 +2,14 @@
 using Entities.DTO;
 using Entities.Models;
 using FileUploadApi.JwtFeatures;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FileUploadApi.Controllers
@@ -17,13 +19,15 @@ namespace FileUploadApi.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IMapper _mapper;
         private readonly JwtHandler _jwtHandler;
-        public AccountsController(UserManager<User> userManager, IMapper mapper, JwtHandler jwtHandler)
+        public AccountsController(UserManager<User> userManager, IMapper mapper, JwtHandler jwtHandler, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwtHandler = jwtHandler;
+            _signInManager = signInManager;
         }
 
         [HttpPost("Registration")]
@@ -59,5 +63,12 @@ namespace FileUploadApi.Controllers
 
             return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token });
         }
+        //[HttpPost("logout")]
+        //[Authorize]
+        //public async Task<IActionResult> Logout()
+        //{
+        //    return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = "123" });
+        //}
+
     }
 }

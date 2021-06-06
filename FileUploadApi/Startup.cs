@@ -19,6 +19,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FileUploadApi.JwtFeatures;
+using FileUploadApi.Repositories;
+using FileUploadApi.Services.AppUser.Interfaces;
+using FileUploadApi.Services.AppUser.Implementation;
+using FileUploadApi.Services.Upload.Interfaces;
+using FileUploadApi.Services.Upload.Implementation;
 
 namespace FileUploadApi
 {
@@ -73,8 +78,15 @@ namespace FileUploadApi
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetSection("securityKey").Value))
                 };
             });
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<JwtHandler>();
+
+            services.AddScoped<IAppUserService, AppUserService>();
+            services.AddScoped<IUploadService, UploadService>();
+
+            services.AddHttpContextAccessor();
+            //services.AddSession();
 
             services.AddControllers();
         }
