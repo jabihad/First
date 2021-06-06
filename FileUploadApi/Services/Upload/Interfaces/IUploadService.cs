@@ -9,5 +9,6 @@ namespace FileUploadApi.Services.Upload.Interfaces
     public interface IUploadService
     {
         Task<int> Upload(ICollection<IFormFile> files);
+        Task<bool> DeleteFile(string fileName);
     }
 }

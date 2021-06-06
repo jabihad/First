@@ -22,41 +22,8 @@ namespace First.Controllers
         {
             _uploadService = uploadService;
         }
-        //[Authorize]
-        //[HttpPost, DisableRequestSizeLimit]
-        //public IActionResult Upload(ICollection<IFormFile> files)
-        //{
-        //    try
-        //    {
-        //        var folderName = Path.Combine("StaticFiles", "Images");
-        //        var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-
-        //        if (files.Count == 0)
-        //        {
-        //            return BadRequest();
-        //        }
-
-        //        foreach (var file in files)
-        //        {
-        //            var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-        //            var fullPath = Path.Combine(pathToSave, fileName);
-        //            var dbPath = Path.Combine(folderName, fileName);
-
-        //            using (var stream = new FileStream(fullPath, FileMode.Create))
-        //            {
-        //                file.CopyTo(stream);
-        //            }
-        //        }
-
-        //        return Ok("All the files are successfully uploaded.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, "Internal server error");
-        //    }
-        //}
         [Authorize]
-        [HttpPost, DisableRequestSizeLimit]
+        [HttpPost("UploadFile")]
         public async Task<IActionResult> Upload(ICollection<IFormFile> files)
         {
             var res = await _uploadService.Upload(files);
@@ -67,6 +34,13 @@ namespace First.Controllers
                 return Ok("All the files are successfully uploaded.");
 
             return StatusCode(500, "Internal server error");
+        }
+        [Authorize]
+        [HttpPost("DeleteFile")]
+        public async Task<bool> DeleteFile(string fileName)
+        {
+            var res = await _uploadService.DeleteFile(fileName);
+            return res;
         }
     }
 }

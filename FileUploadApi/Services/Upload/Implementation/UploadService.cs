@@ -90,6 +90,21 @@ namespace FileUploadApi.Services.Upload.Implementation
                 return 2;// StatusCode(500, "Internal server error");
             }
         }
+        public async Task<bool> DeleteFile(string fileName)
+        {
+            var currentEmail = _appUserService.GetuserEmail();
+            var folderName = Path.Combine("StaticFiles", currentEmail);
+            var file = Path.Combine(Directory.GetCurrentDirectory(), folderName, fileName);
+            var re = file;
+            if ((System.IO.File.Exists(file)))
+            {
+                System.IO.File.Delete(file);
+                return true;
+            }
+            //System.IO.File.Delete("C:\\Users\\BS512\\source\\repos\\First\\FileUploadApi\\StaticFiles\\jihadcml@gmail.com\\Conversation.txt");
+            return false;
+            
+        }
 
     }
 }
