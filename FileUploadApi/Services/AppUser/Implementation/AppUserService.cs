@@ -17,10 +17,18 @@ namespace FileUploadApi.Services.AppUser.Implementation
         {
             _httpContext = httpContext;
         }
+        public string GetuserId()
+        {
+            return _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        public string GetuserName()
+        {
+            return _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.Name);
+        }
         public string GetuserEmail()
         {
-            var currentEmail = _httpContext.HttpContext.User.Identity.Name;
-            return currentEmail;
+            return _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.Email);
         }
     }
 }

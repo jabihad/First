@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Entities.DTO;
 using Entities.Models;
+using FileUploadApi.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace FileUploadApi
         {
             CreateMap<UserForRegistrationDto, User>()
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+            CreateMap<LoginActivityModel, LoginActivity>();
         }
     }
 }

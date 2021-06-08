@@ -7,6 +7,8 @@ namespace FileUploadApi.Services.AppUser.Interfaces
 {
     public interface IAppUserService
     {
+        string GetuserId();
+        public string GetuserName();
         public string GetuserEmail();
     }
 }

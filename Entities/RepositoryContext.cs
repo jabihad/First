@@ -9,14 +9,15 @@ namespace Entities
 {
     public class RepositoryContext : IdentityDbContext<User>
     {
-        public RepositoryContext(DbContextOptions options)
+        public RepositoryContext(DbContextOptions<RepositoryContext> options)
         : base(options)
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        /*protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-        }
+        }*/
+        public DbSet<LoginActivity> LoginActivities { get; set; }
     }
 }

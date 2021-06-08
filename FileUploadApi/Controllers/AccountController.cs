@@ -2,6 +2,8 @@
 using Entities.DTO;
 using Entities.Models;
 using FileUploadApi.JwtFeatures;
+using FileUploadApi.Services.AppUser.Interfaces;
+using FileUploadApi.Services.Login.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -23,13 +25,24 @@ namespace FileUploadApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IMapper _mapper;
+        private readonly ILoginService _loginService;
+        private readonly IAppUserService _appUserService;
         //private readonly JwtHandler _jwtHandler;
-        public AccountController(UserManager<User> userManager, IMapper mapper/*, JwtHandler jwtHandler*/, SignInManager<User> signInManager)
+        public AccountController(
+            UserManager<User> userManager,
+            IMapper mapper,
+            //JwtHandler jwtHandler,
+            SignInManager<User> signInManager,
+            ILoginService loginService,
+            IAppUserService appUserService
+            )
         {
             _userManager = userManager;
             _mapper = mapper;
             //_jwtHandler = jwtHandler;
             _signInManager = signInManager;
+            _loginService = loginService;
+            _appUserService = appUserService;
         }
 
         [HttpPost("Registration")]
@@ -74,9 +87,10 @@ namespace FileUploadApi.Controllers
             {
 
                 var result = await _signInManager.PasswordSignInAsync(userForAuthentication.Email, userForAuthentication.Password, false, false);
-
                 if (result.Succeeded)
                 {
+                    var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
+                    await _loginService.CreateLoginTimeAsync(user.Id);
                     Log.Information("Login success {@model}", userForAuthentication);
                     return StatusCode(200);
                 }
@@ -91,6 +105,8 @@ namespace FileUploadApi.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
+            var userId = _appUserService.GetuserId();
+            await _loginService.CreateLogoutTimeAsync(userId);
             await _signInManager.SignOutAsync();
             return StatusCode(200);
         }
