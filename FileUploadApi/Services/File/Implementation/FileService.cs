@@ -1,6 +1,7 @@
 ﻿using FileUploadApi.Services.AppUser.Interfaces;
 using FileUploadApi.Services.Upload.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace FileUploadApi.Services.Upload.Implementation
 {
-    public class UploadService : IUploadService
+    public class FileService : IFileService
     {
         private readonly IAppUserService _appUserService;
         private readonly IHttpContextAccessor _httpContext;
-        public UploadService(IAppUserService appUserService, IHttpContextAccessor httpContext)
+        public FileService(IAppUserService appUserService, IHttpContextAccessor httpContext)
         {
             _appUserService = appUserService;
             _httpContext = httpContext;
@@ -90,20 +91,30 @@ namespace FileUploadApi.Services.Upload.Implementation
                 return 2;// StatusCode(500, "Internal server error");
             }
         }
-        public async Task<bool> DeleteFile(string fileName)
+        public async Task<bool> DeleteFile(ICollection<IFormFile> files)
         {
-            var currentEmail = _appUserService.GetuserEmail();
-            var folderName = Path.Combine("StaticFiles", currentEmail);
-            var file = Path.Combine(Directory.GetCurrentDirectory(), folderName, fileName);
-            var re = file;
-            if ((System.IO.File.Exists(file)))
+            try
             {
-                System.IO.File.Delete(file);
+                var currentEmail = _appUserService.GetuserEmail();
+                var folderName = Path.Combine("StaticFiles", currentEmail);
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                foreach (var file in files)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    var fullPath = Path.Combine(pathToSave, fileName);
+                    if ((System.IO.File.Exists(fullPath)))
+                    {
+                        System.IO.File.Delete(fullPath);     
+                    }
+                }
                 return true;
             }
-            //System.IO.File.Delete("C:\\Users\\BS512\\source\\repos\\First\\FileUploadApi\\StaticFiles\\jihadcml@gmail.com\\Conversation.txt");
-            return false;
-            
+            catch (Exception ex)
+            {
+                return false;
+            }
+
         }
 
     }

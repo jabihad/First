@@ -14,19 +14,19 @@ namespace First.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UploadController : ControllerBase
+    public class FileController : ControllerBase
     {
-        private readonly IUploadService _uploadService;
+        private readonly IFileService _fileService;
 
-        public UploadController(IUploadService uploadService)
+        public FileController(IFileService fileService)
         {
-            _uploadService = uploadService;
+            _fileService = fileService;
         }
         [Authorize]
         [HttpPost("UploadFile")]
         public async Task<IActionResult> Upload(ICollection<IFormFile> files)
         {
-            var res = await _uploadService.Upload(files);
+            var res = await _fileService.Upload(files);
 
             if (res == 0)
                 return BadRequest();
@@ -37,9 +37,9 @@ namespace First.Controllers
         }
         [Authorize]
         [HttpPost("DeleteFile")]
-        public async Task<bool> DeleteFile(string fileName)
+        public async Task<bool> DeleteFile(ICollection<IFormFile> files)
         {
-            var res = await _uploadService.DeleteFile(fileName);
+            var res = await _fileService.DeleteFile(files);
             return res;
         }
     }

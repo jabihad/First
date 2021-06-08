@@ -59,7 +59,7 @@ namespace FileUploadApi
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<RepositoryContext>();
 
-            var jwtSettings = Configuration.GetSection("JwtSettings");
+            /*var jwtSettings = Configuration.GetSection("JwtSettings");
             services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,13 +77,13 @@ namespace FileUploadApi
                     ValidAudience = jwtSettings.GetSection("validAudience").Value,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetSection("securityKey").Value))
                 };
-            });
+            });*/
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-            services.AddScoped<JwtHandler>();
+            //services.AddScoped<JwtHandler>();
 
             services.AddScoped<IAppUserService, AppUserService>();
-            services.AddScoped<IUploadService, UploadService>();
+            services.AddScoped<IFileService, FileService>();
 
             services.AddHttpContextAccessor();
             //services.AddSession();

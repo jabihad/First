@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileUploadApi.Services.Upload.Interfaces
 {
-    public interface IUploadService
+    public interface IFileService
     {
         Task<int> Upload(ICollection<IFormFile> files);
-        Task<bool> DeleteFile(string fileName);
+        Task<bool> DeleteFile(ICollection<IFormFile> files);
     }
 }
