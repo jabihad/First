@@ -28,6 +28,8 @@ using FileUploadApi.Services.Login.Interfaces;
 using FileUploadApi.Services.Login.Implementation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Http;
+using FileUploadApi.Services.Report.Interfaces;
+using FileUploadApi.Services.Report.Implementation;
 
 namespace FileUploadApi
 {
@@ -89,6 +91,7 @@ namespace FileUploadApi
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IReportService, ReportService>();
 
             services.AddHttpContextAccessor(); 
             services.AddSession();
