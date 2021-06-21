@@ -69,6 +69,7 @@ namespace FileUploadApi.Controllers
         public async Task<IActionResult> Login([FromBody] UserForAuthenticationDto userForAuthentication)
         {
             var user = await _userManager.FindByNameAsync(userForAuthentication.Email);
+            var role = await _userManager.GetRolesAsync(user);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
@@ -78,7 +79,7 @@ namespace FileUploadApi.Controllers
             //await _loginService.CreateLoginTimeAsync(getUser.Id);
 
             var signingCredentials = _jwtHandler.GetSigningCredentials();
-            var claims = _jwtHandler.GetClaims(user);
+            var claims = _jwtHandler.GetClaims(user, role[0]);
             var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
@@ -115,6 +116,7 @@ namespace FileUploadApi.Controllers
             await _signInManager.SignOutAsync();
             return StatusCode(200);
         }
+
 
     }
 }

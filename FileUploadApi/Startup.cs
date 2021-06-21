@@ -30,6 +30,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Http;
 using FileUploadApi.Services.Report.Interfaces;
 using FileUploadApi.Services.Report.Implementation;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace FileUploadApi
 {
@@ -84,6 +85,16 @@ namespace FileUploadApi
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetSection("securityKey").Value))
                 };
             });
+            //
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = null;
+            });
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.Limits.MaxRequestBodySize = null;
+            });
+            //
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<JwtHandler>();

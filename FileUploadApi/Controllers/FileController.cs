@@ -32,6 +32,10 @@ namespace First.Controllers
                 return BadRequest();
             else if (res == 1)
                 return Ok("All the files are successfully uploaded.");
+            else if (res == 3)
+                return StatusCode(415, "File type is not supported");
+            else if (res == 4)
+                return StatusCode(413, "File Size is too big!!!");
 
             return StatusCode(500, "Internal server error");
         }

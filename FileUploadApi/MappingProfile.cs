@@ -16,6 +16,7 @@ namespace FileUploadApi
             CreateMap<UserForRegistrationDto, User>()
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
             CreateMap<LoginActivityModel, LoginActivity>();
+            CreateMap<ExtensionModel, Extension>();
         }
     }
 }

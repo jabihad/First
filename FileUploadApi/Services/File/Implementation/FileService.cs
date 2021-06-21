@@ -1,4 +1,6 @@
-﻿using FileUploadApi.Services.AppUser.Interfaces;
+﻿using Entities.Models;
+using FileUploadApi.Repositories;
+using FileUploadApi.Services.AppUser.Interfaces;
 using FileUploadApi.Services.Upload.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Serilog;
@@ -15,10 +17,12 @@ namespace FileUploadApi.Services.Upload.Implementation
     {
         private readonly IAppUserService _appUserService;
         private readonly IHttpContextAccessor _httpContext;
-        public FileService(IAppUserService appUserService, IHttpContextAccessor httpContext)
+        private readonly IRepository<Extension> _extension;
+        public FileService(IAppUserService appUserService, IHttpContextAccessor httpContext, IRepository<Extension> extension)
         {
             _appUserService = appUserService;
             _httpContext = httpContext;
+            _extension = extension;
         }
         //public async Task<int> Upload(ICollection<IFormFile> files)
         //{
@@ -76,6 +80,23 @@ namespace FileUploadApi.Services.Upload.Implementation
                 foreach (var file in files)
                 {
                     var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    //
+                    var extension = fileName.Substring(fileName.LastIndexOf('.') + 1);
+
+                    var permittedExtensions = await _extension.GetAllAsync();
+
+                    var isExtensionPermitted = permittedExtensions.FirstOrDefault(i => i.ExtensionName.ToLower() == extension.ToLower());
+                    if(isExtensionPermitted == null)
+                    {
+                        return 3;
+                    }
+                    double maxFileLimit = isExtensionPermitted.MaxSize * 1048576; // mb to byte
+                    if (file.Length > maxFileLimit)
+                    {
+                        return 4;
+                    }
+
+                    //
                     var fullPath = Path.Combine(pathToSave, fileName);
                     var dbPath = Path.Combine(folderName, fileName);
 

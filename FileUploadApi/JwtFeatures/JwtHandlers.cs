@@ -30,11 +30,12 @@ namespace FileUploadApi.JwtFeatures
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        public List<Claim> GetClaims(IdentityUser user)
+        public List<Claim> GetClaims(IdentityUser user, string role)
         {
             var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Email)
+            new Claim(ClaimTypes.Name, user.Email),
+            new Claim(ClaimTypes.Role,  role)
         };
 
             return claims;
