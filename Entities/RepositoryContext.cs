@@ -19,5 +19,6 @@ namespace Entities
             base.OnModelCreating(modelBuilder);
         }*/
         public DbSet<LoginActivity> LoginActivities { get; set; }
+        public DbSet<Extension> Extensions { get; set; }
     }
 }
