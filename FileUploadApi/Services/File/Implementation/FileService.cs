@@ -54,12 +54,13 @@ namespace FileUploadApi.Services.Upload.Implementation
         //        return 2;// StatusCode(500, "Internal server error");
         //    }
         //}
-
+        
         public async Task<int> Upload(ICollection<IFormFile> files)
         {
             try
             {
-                var currentEmail = _appUserService.GetuserEmail();
+                //var currentEmail = _appUserService.GetuserId();
+                var currentEmail = "jihad";
                 var folderName = Path.Combine("StaticFiles", currentEmail);
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
@@ -95,7 +96,8 @@ namespace FileUploadApi.Services.Upload.Implementation
         {
             try
             {
-                var currentEmail = _appUserService.GetuserEmail();
+                //var currentEmail = _appUserService.GetuserEmail();
+                var currentEmail = "jihad";
                 var folderName = Path.Combine("StaticFiles", currentEmail);
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 

@@ -40,7 +40,7 @@ namespace FileUploadApi.Services.Report.Implementation
                            LogoutTime = x.LogoutTime
                            
                        },
-                       x => x.Users.Email == email,
+                       x => x.Users.Email == email && x.UserId==x.Users.Id,
                        null,
                        null,
                        true

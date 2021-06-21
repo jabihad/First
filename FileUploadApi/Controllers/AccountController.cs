@@ -72,6 +72,10 @@ namespace FileUploadApi.Controllers
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
+            var res = await _signInManager.PasswordSignInAsync(userForAuthentication.Email, userForAuthentication.Password, false, false);
+
+            //var getUser = await _userManager.FindByEmailAsync(userForAuthentication.Email);
+            //await _loginService.CreateLoginTimeAsync(getUser.Id);
 
             var signingCredentials = _jwtHandler.GetSigningCredentials();
             var claims = _jwtHandler.GetClaims(user);
