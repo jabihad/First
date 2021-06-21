@@ -59,8 +59,8 @@ namespace FileUploadApi.Services.Upload.Implementation
         {
             try
             {
-                //var currentEmail = _appUserService.GetuserId();
-                var currentEmail = "jihad";
+                var currentEmail = _appUserService.GetuserEmail();
+                //var currentEmail = "jihad";
                 var folderName = Path.Combine("StaticFiles", currentEmail);
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
@@ -96,8 +96,8 @@ namespace FileUploadApi.Services.Upload.Implementation
         {
             try
             {
-                //var currentEmail = _appUserService.GetuserEmail();
-                var currentEmail = "jihad";
+                var currentEmail = _appUserService.GetuserEmail();
+                //var currentEmail = "jihad";
                 var folderName = Path.Combine("StaticFiles", currentEmail);
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 

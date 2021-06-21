@@ -28,7 +28,8 @@ namespace FileUploadApi.Services.AppUser.Implementation
         }
         public string GetuserEmail()
         {
-            return _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.Email);
+            //return _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.Email);
+            return _httpContext.HttpContext.User?.Identity.Name;
         }
     }
 }

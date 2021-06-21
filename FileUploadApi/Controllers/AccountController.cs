@@ -111,7 +111,7 @@ namespace FileUploadApi.Controllers
         public async Task<IActionResult> Logout()
         {
             var userId = _appUserService.GetuserId();
-            await _loginService.CreateLogoutTimeAsync(userId);
+            //await _loginService.CreateLogoutTimeAsync(userId);
             await _signInManager.SignOutAsync();
             return StatusCode(200);
         }
