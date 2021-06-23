@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Entities;
 using Entities.Models;
 
-namespace UploadFilesServer.Controllers
+namespace FileUploadApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

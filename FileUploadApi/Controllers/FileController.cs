@@ -5,12 +5,13 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FileUploadApi.Model;
 using FileUploadApi.Services.Upload.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace First.Controllers
+namespace FileUploadApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -39,12 +40,28 @@ namespace First.Controllers
 
             return StatusCode(500, "Internal server error");
         }
-        [Authorize]
+        /*[Authorize]
         [HttpPost("DeleteFile")]
         public async Task<bool> DeleteFile(ICollection<IFormFile> files)
         {
             var res = await _fileService.DeleteFile(files);
             return res;
+        }*/
+        [Authorize]
+        [HttpPost("DeleteFile")]
+        public async Task<bool> DeleteFile([FromBody]FileModel fileModel)
+        {
+            var id = fileModel.Id;
+            var res = await _fileService.DeleteFile(id);
+            return res;
         }
+        [Authorize]
+        [HttpGet("FileList")]
+        public async Task<IEnumerable<FileModel>> FileList()
+        {
+            var res = await _fileService.FileList();
+            return res;
+        }
+
     }
 }

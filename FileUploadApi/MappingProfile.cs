@@ -17,6 +17,7 @@ namespace FileUploadApi
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
             CreateMap<LoginActivityModel, LoginActivity>();
             CreateMap<ExtensionModel, Extension>();
+            CreateMap<FileModel, File>().ReverseMap();
         }
     }
 }

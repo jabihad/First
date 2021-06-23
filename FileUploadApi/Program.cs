@@ -1,6 +1,6 @@
 using Entities;
 using Entities.Models;
-using FileUpload.Models;
+using FileUploadApi.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

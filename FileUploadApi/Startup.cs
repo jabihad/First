@@ -85,16 +85,16 @@ namespace FileUploadApi
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetSection("securityKey").Value))
                 };
             });
-            //
-            services.Configure<IISServerOptions>(options =>
-            {
-                options.MaxRequestBodySize = null;
-            });
-            services.Configure<KestrelServerOptions>(options =>
-            {
-                options.Limits.MaxRequestBodySize = null;
-            });
-            //
+            
+            //services.Configure<IISServerOptions>(options =>
+            //{
+            //    options.MaxRequestBodySize = null;
+            //});
+            //services.Configure<KestrelServerOptions>(options =>
+            //{
+            //    options.Limits.MaxRequestBodySize = null;
+            //});
+            
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<JwtHandler>();

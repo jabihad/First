@@ -1,15 +1,20 @@
-﻿using Entities.Models;
+﻿using AutoMapper;
+using Entities.Models;
+using FileUploadApi.Model;
 using FileUploadApi.Repositories;
 using FileUploadApi.Services.AppUser.Interfaces;
 using FileUploadApi.Services.Upload.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using File = Entities.Models.File;
 
 namespace FileUploadApi.Services.Upload.Implementation
 {
@@ -18,11 +23,19 @@ namespace FileUploadApi.Services.Upload.Implementation
         private readonly IAppUserService _appUserService;
         private readonly IHttpContextAccessor _httpContext;
         private readonly IRepository<Extension> _extension;
-        public FileService(IAppUserService appUserService, IHttpContextAccessor httpContext, IRepository<Extension> extension)
+        private readonly IRepository<File> _fileRepo;
+        private readonly IMapper _mapper;
+        public FileService(IAppUserService appUserService,
+                           IHttpContextAccessor httpContext,
+                           IRepository<Extension> extension,
+                           IRepository<File> fileRepo,
+                           IMapper mapper)
         {
-            _appUserService = appUserService;
+            //_appUserService = appUserService;
             _httpContext = httpContext;
             _extension = extension;
+            _fileRepo = fileRepo;
+            _mapper = mapper;
         }
         //public async Task<int> Upload(ICollection<IFormFile> files)
         //{
@@ -63,9 +76,8 @@ namespace FileUploadApi.Services.Upload.Implementation
         {
             try
             {
-                var currentEmail = _appUserService.GetuserEmail();
-                //var currentEmail = "jihad";
-                var folderName = Path.Combine("StaticFiles", currentEmail);
+                var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var folderName = Path.Combine("StaticFiles", userId);
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
                 if (files.Count == 0)
@@ -95,14 +107,24 @@ namespace FileUploadApi.Services.Upload.Implementation
                     {
                         return 4;
                     }
+                    var fileNameWithOutExtension = fileName.Replace(fileName.Substring(fileName.LastIndexOf('.')), "");
 
-                    //
-                    var fullPath = Path.Combine(pathToSave, fileName);
-                    var dbPath = Path.Combine(folderName, fileName);
+                    var changedFileName = fileNameWithOutExtension + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + "." + extension;
+                    var fullPath = Path.Combine(pathToSave, changedFileName);
+                    //var fullPath2 = fullPath.;
+                    //var dbPath = Path.Combine(folderName, fileName);
 
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
                         file.CopyTo(stream);
+                        var fileModel = new FileModel()
+                        {
+                            FileUrl = /*userId + "\\" +*/ changedFileName,
+                            UserId = userId,
+                            CreatedTime = DateTime.UtcNow
+                        };
+                        var res = _mapper.Map<File>(fileModel);
+                        var s = await _fileRepo.CreateAsync(res);
                     }
                 }
 
@@ -112,33 +134,33 @@ namespace FileUploadApi.Services.Upload.Implementation
             {
                 return 2;// StatusCode(500, "Internal server error");
             }
-        }
-        public async Task<bool> DeleteFile(ICollection<IFormFile> files)
+        }  
+        public async Task<bool> DeleteFile(int id)
         {
-            try
+            var file = await _fileRepo.FindAsync(f=>f.Id==id);
+            if (file.FileUrl != null)
             {
-                var currentEmail = _appUserService.GetuserEmail();
-                //var currentEmail = "jihad";
-                var folderName = Path.Combine("StaticFiles", currentEmail);
-                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-
-                foreach (var file in files)
+                //var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var folderName = Path.Combine("StaticFiles", userId);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), folderName, file.FileUrl);
+                if ((System.IO.File.Exists(path)))
                 {
-                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-                    var fullPath = Path.Combine(pathToSave, fileName);
-                    if ((System.IO.File.Exists(fullPath)))
-                    {
-                        System.IO.File.Delete(fullPath);     
-                    }
+                    var res = await _fileRepo.DeleteAsync(f => f.Id==file.Id);
+                    System.IO.File.Delete(path);
+                    
                 }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
             }
 
+            return true;
         }
+        public async Task<IEnumerable<FileModel>> FileList()
+        {
+            var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _fileRepo.FindAllAsync(u => u.UserId == userId);
+            var fileModel = _mapper.Map<IEnumerable<FileModel>>(result);
 
+            return fileModel;
+        }
     }
 }
