@@ -79,6 +79,8 @@ namespace FileUploadApi.Services.Upload.Implementation
                 var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
                 var folderName = Path.Combine("StaticFiles", userId);
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                //var temp = "C://Users//BS512//source//repos//angular-authentication-identity//angular-identity-aspnetcore-security//AngularClient//src//assets";
+                //var pathToSave = Path.Combine(temp, userId);
 
                 if (files.Count == 0)
                 {
@@ -119,7 +121,7 @@ namespace FileUploadApi.Services.Upload.Implementation
                         file.CopyTo(stream);
                         var fileModel = new FileModel()
                         {
-                            FileUrl = /*userId + "\\" +*/ changedFileName,
+                            FileUrl = userId + "\\" + changedFileName,
                             UserId = userId,
                             CreatedTime = DateTime.UtcNow
                         };
@@ -140,10 +142,11 @@ namespace FileUploadApi.Services.Upload.Implementation
             var file = await _fileRepo.FindAsync(f=>f.Id==id);
             if (file.FileUrl != null)
             {
-                //var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
                 var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
                 var folderName = Path.Combine("StaticFiles", userId);
-                var path = Path.Combine(Directory.GetCurrentDirectory(), folderName, file.FileUrl);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", file.FileUrl);
+                //var temp = "C://Users//BS512//source//repos//angular-authentication-identity//angular-identity-aspnetcore-security//AngularClient//src//assets";
+                //var path = Path.Combine(temp, userId, file.FileUrl);
                 if ((System.IO.File.Exists(path)))
                 {
                     var res = await _fileRepo.DeleteAsync(f => f.Id==file.Id);
@@ -161,6 +164,13 @@ namespace FileUploadApi.Services.Upload.Implementation
             var fileModel = _mapper.Map<IEnumerable<FileModel>>(result);
 
             return fileModel;
+        }
+        public async Task<FileModel> GetFileById(int id)
+        {
+            var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var res = await _fileRepo.FindAsync(f=>f.Id==id);
+            var file = _mapper.Map<FileModel>(res);
+            return file;
         }
     }
 }

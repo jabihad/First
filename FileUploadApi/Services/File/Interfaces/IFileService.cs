@@ -14,5 +14,6 @@ namespace FileUploadApi.Services.Upload.Interfaces
         //Task<bool> DeleteFile(ICollection<IFormFile> files);
         Task<bool> DeleteFile(int id);
         Task<IEnumerable<FileModel>> FileList();
+        Task<FileModel> GetFileById(int id);
     }
 }
