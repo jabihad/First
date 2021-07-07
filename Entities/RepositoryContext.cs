@@ -21,5 +21,6 @@ namespace Entities
         public DbSet<LoginActivity> LoginActivities { get; set; }
         public DbSet<Extension> Extensions { get; set; }
         public DbSet<File> Files { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

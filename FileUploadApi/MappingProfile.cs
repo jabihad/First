@@ -18,6 +18,7 @@ namespace FileUploadApi
             CreateMap<LoginActivityModel, LoginActivity>();
             CreateMap<ExtensionModel, Extension>().ReverseMap();
             CreateMap<FileModel, File>().ReverseMap();
+            CreateMap<CategoryModel, Category>().ReverseMap();
         }
     }
 }
