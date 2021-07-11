@@ -145,8 +145,6 @@ namespace FileUploadApi.Services.Upload.Implementation
                 var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
                 var folderName = Path.Combine("StaticFiles", userId);
                 var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", file.FileUrl);
-                //var temp = "C://Users//BS512//source//repos//angular-authentication-identity//angular-identity-aspnetcore-security//AngularClient//src//assets";
-                //var path = Path.Combine(temp, userId, file.FileUrl);
                 if ((System.IO.File.Exists(path)))
                 {
                     var res = await _fileRepo.DeleteAsync(f => f.Id==file.Id);

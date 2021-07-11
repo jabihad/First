@@ -11,5 +11,6 @@ namespace Entities.Models
         public string LastName { get; set; }
         public ICollection<LoginActivity> LoginActivities { get; set; }
         public ICollection<File> Files { get; set; }
+        public ICollection<Post> Posts { get; set; }
     }
 }

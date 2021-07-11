@@ -37,6 +37,8 @@ using FileUploadApi.Services.Admin.Interfaces;
 using FileUploadApi.Services.Admin.Implementation;
 using FileUploadApi.Services.ServiceCategoy.Interfaces;
 using FileUploadApi.Services.ServiceCategoy.Implementation;
+using FileUploadApi.Services.ServicePost.Interfaces;
+using FileUploadApi.Services.ServicePost.Implementation;
 
 namespace FileUploadApi
 {
@@ -111,6 +113,7 @@ namespace FileUploadApi
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IPostService, PostService>();
 
             services.AddHttpContextAccessor();
             services.AddSession();

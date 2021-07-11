@@ -27,7 +27,7 @@ namespace FileUploadApi.Controllers
             _fileService = fileService;
             _httpContextAccessor = httpContextAccessor;
            _hostingEnvironment = hostingEnvironment;
-    }
+        }
         [Authorize]
         [HttpPost("UploadFile")]
         public async Task<IActionResult> Upload(ICollection<IFormFile> files)

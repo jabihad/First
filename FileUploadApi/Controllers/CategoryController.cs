@@ -36,6 +36,8 @@ namespace FileUploadApi.Controllers
             var categoryModel = await _categoryService.GetCategoryById(id);
             return categoryModel;
         }
+        //[Authorize(Roles = "customer")]
+        [AllowAnonymous]
         [HttpGet("GetAllCategory")]
         public async Task<IEnumerable<CategoryModel>> GetAllCategory()
         {

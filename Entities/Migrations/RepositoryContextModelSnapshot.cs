@@ -101,6 +101,40 @@ namespace Entities.Migrations
                     b.ToTable("LoginActivities");
                 });
 
+            modelBuilder.Entity("Entities.Models.Post", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Posts");
+                });
+
             modelBuilder.Entity("Entities.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -321,6 +355,23 @@ namespace Entities.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("Entities.Models.Post", b =>
+                {
+                    b.HasOne("Entities.Models.Category", "Category")
+                        .WithMany("Posts")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Entities.Models.User", "User")
+                        .WithMany("Posts")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -372,11 +423,18 @@ namespace Entities.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Entities.Models.Category", b =>
+                {
+                    b.Navigation("Posts");
+                });
+
             modelBuilder.Entity("Entities.Models.User", b =>
                 {
                     b.Navigation("Files");
 
                     b.Navigation("LoginActivities");
+
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }
