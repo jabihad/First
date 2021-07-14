@@ -9,6 +9,7 @@ namespace Entities.Models
         public int Id { get; set; }
         public string ImageUrl { get; set; }
         public string Title { get; set; }
+        public string TitleUrl { get; set; }
         public string Text { get; set; }
         public DateTime CreatedTime { get; set; }
         public int CategoryId { get; set; }

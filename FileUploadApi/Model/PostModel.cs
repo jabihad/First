@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,8 +11,10 @@ namespace FileUploadApi.Model
     {
         public int Id { get; set; }
         public string ImageUrl { get; set; }
+        //[Required]
         public IFormFile File { get; set; }
         public string Title { get; set; }
+        public string TitleUrl { get; set; }
         public string Text { get; set; }
         public DateTime CreatedTime { get; set; }
         public int CategoryId { get; set; }

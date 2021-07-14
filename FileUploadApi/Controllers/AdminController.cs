@@ -55,7 +55,7 @@ namespace FileUploadApi.Controllers
             return result;
         }
         [HttpPost("CreateExtension")]
-        public async Task<IActionResult> CreateExtension([FromBody]ExtensionModel extensionModel)
+        public async Task<IActionResult> CreateExtension([FromBody] ExtensionModel extensionModel)
         {
             //var res = _mapper.Map<Extension>(extensionModel);
             //var chk = await IsExist(extensionModel.ExtensionName);
@@ -64,9 +64,18 @@ namespace FileUploadApi.Controllers
             //    await _extension.CreateAsync(res);
             //}
             //return StatusCode(200);
-            var res = await  _adminService.CreateExtension(extensionModel);
-            
-            return StatusCode(200);
+            try
+            {
+                var res = await _adminService.CreateExtension(extensionModel);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { message = "Can't Create Extension" });
+            }
+
+
+            //return StatusCode(200);
         }
         //private async Task<bool> IsExist(string extension)
         //{

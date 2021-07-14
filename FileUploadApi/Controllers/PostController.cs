@@ -48,12 +48,12 @@ namespace FileUploadApi.Controllers
                 return Ok(new { message = "Post is not deleted" });
         }
         [Authorize]
-        [HttpGet("GetAllPost")]
-        public async Task<IActionResult> GetAllPost()
+        [HttpGet("GetAllPost/{pageIndex}/{pageSize}")]
+        public async Task<IActionResult> GetAllPost(int pageIndex, int pageSize)
         {
             try
             {
-                var res = await _postSvc.GetAllPost();
+                var res = await _postSvc.GetAllPost(pageIndex, pageSize);
                 return Ok(res);
             }
             catch
@@ -61,6 +61,22 @@ namespace FileUploadApi.Controllers
                 return Ok(new { message = "Can't get Post" });
             }
         }
+
+        [Authorize]
+        [HttpGet("GetAllPostByCategory")]
+        public async Task<IActionResult> GetAllPostByCategory()
+        {
+            try
+            {
+                var res = await _postSvc.GetAllPostByCategory();
+                return Ok(res);
+            }
+            catch
+            {
+                return Ok(new { message = "Can't get Post" });
+            }
+        }
+
         [Authorize]
         [HttpGet("GetPostById/{id}")]
         public async Task<IActionResult> GetPostById(int id)

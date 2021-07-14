@@ -18,14 +18,18 @@ namespace FileUploadApi.Services.ServicePost.Implementation
     {
         private readonly IRepository<Post> _postRepo;
         private readonly IRepository<Extension> _extensionRepo;
+        private readonly IRepository<Category> _categoryRepo;
         private readonly IHttpContextAccessor _httpContext;
         private readonly IMapper _mapper;
-        public PostService(IRepository<Post> postRepo, IRepository<Extension> extensionRepo, IHttpContextAccessor httpContext, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public PostService(IRepository<Post> postRepo, IRepository<Extension> extensionRepo, IRepository<Category> categoryRepo, IHttpContextAccessor httpContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _postRepo = postRepo;
             _extensionRepo = extensionRepo;
+            _categoryRepo = categoryRepo;
             _httpContext = httpContext;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<int> CreatePost(PostModel postModel)
         {
@@ -104,12 +108,46 @@ namespace FileUploadApi.Services.ServicePost.Implementation
             }
         }
 
-        public async Task<IEnumerable<PostModel>> GetAllPost()
+        public async Task<IEnumerable<PostModel>> GetAllPost(int pageIndex, int pageSize)
         {
             var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var posts = await _postRepo.FindAllAsync(p => p.UserId == userId);
             var postModel = _mapper.Map<IEnumerable<PostModel>>(posts);
-            return postModel;
+            //var res = postModel.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize);
+            var res = postModel.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            return res;
+        }
+        public async Task<List<ResultModel>> GetAllPostByCategory()
+        {
+            List<ResultModel> resultModelList = new List<ResultModel>();
+            ResultModel resultModel = new ResultModel();
+            var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var posts = await _postRepo.FindAllAsync(p => p.UserId == userId);
+            var postModel = _mapper.Map<IEnumerable<PostModel>>(posts);
+            var res = postModel.GroupBy(c => c.CategoryId).ToList();
+            var hostAddress = _httpContextAccessor.HttpContext.Request.Scheme + "://" + _httpContextAccessor.HttpContext.Request.Host.Value;
+            foreach (var item in res)
+            {
+                var category = await _categoryRepo.GetById(item.Key);
+
+                resultModel = new ResultModel()
+                {
+                    CategoryName = category.Name,
+                    DashboardPostDatas = item.Select(c => new DashboardPostData() { 
+                        Id = c.Id, 
+                        Title = c.Title, 
+                        Image = Path.Combine(hostAddress, "StaticFiles", c.ImageUrl),
+                        Text = c.Text,
+                        CreatedTime = c.CreatedTime
+                        })
+                        .Take(6).ToList()                                                              
+            };
+                resultModelList.Add(resultModel);
+            }
+
+
+
+            return resultModelList;
         }
 
         public async Task<PostModel> GetPostById(int id)
