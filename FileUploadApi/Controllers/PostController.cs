@@ -35,6 +35,8 @@ namespace FileUploadApi.Controllers
                 return StatusCode(415, "File type is not supported");
             else if (res == 4)
                 return StatusCode(413, "File Size is too big!!!");
+            else if (res == 5)
+                return Ok(new { message = "Title Already Exists!!" });
             return StatusCode(500, "Internal server error");
         }
         [Authorize]
@@ -90,6 +92,21 @@ namespace FileUploadApi.Controllers
             {
                 //return ExceptionResult(ex);
                 return Ok(new { message = "Can't get Post"});
+            }
+        }
+        [Authorize]
+        [HttpGet("GetPostByTitle/{title}")]
+        public async Task<IActionResult> GetPostByTitle(string title)
+        {
+            try
+            {
+                var res = await _postSvc.GetPostByTitle(title);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                //return ExceptionResult(ex);
+                return Ok(new { message = "Can't get Post" });
             }
         }
         [Authorize]

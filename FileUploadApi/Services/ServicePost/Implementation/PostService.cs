@@ -35,6 +35,11 @@ namespace FileUploadApi.Services.ServicePost.Implementation
         {
             try
             {
+                var title = postModel.Title;
+                if (await IsExist(title))
+                {
+                    return 5;// Title Exists
+                }
                 var files = postModel.File;
                 var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
                 var folderName = Path.Combine("StaticFiles", userId);
@@ -71,6 +76,7 @@ namespace FileUploadApi.Services.ServicePost.Implementation
                     {
                         ImageUrl = userId + "\\" + changedFileName,
                         Title = postModel.Title,
+                        TitleUrl = postModel.Title.Replace(' ', '-'),
                         Text = postModel.Text,
                         CreatedTime = DateTime.UtcNow,
                         CategoryId = postModel.CategoryId,
@@ -85,6 +91,11 @@ namespace FileUploadApi.Services.ServicePost.Implementation
             {
                 return 2;// StatusCode(500, "Internal server error");
             }
+        }
+        private async Task<bool> IsExist(string title)
+        {
+            var chk = await _postRepo.FindAsync(e => e.Title == title);
+            return chk == null ? false : true;
         }
 
         public async Task<int> DeletePost(int id)
@@ -133,15 +144,18 @@ namespace FileUploadApi.Services.ServicePost.Implementation
                 resultModel = new ResultModel()
                 {
                     CategoryName = category.Name,
-                    DashboardPostDatas = item.Select(c => new DashboardPostData() { 
-                        Id = c.Id, 
-                        Title = c.Title, 
+                    DashboardPostDatas = item.Select(c => new DashboardPostData()
+                    {
+                        Id = c.Id,
+                        Title = c.Title,
+                        TitleUrl = c.TitleUrl,
                         Image = Path.Combine(hostAddress, "StaticFiles", c.ImageUrl),
                         Text = c.Text,
                         CreatedTime = c.CreatedTime
-                        })
-                        .Take(6).ToList()                                                              
-            };
+                    })
+                    .Take(6)
+                    .ToList()
+                };
                 resultModelList.Add(resultModel);
             }
 
@@ -155,6 +169,19 @@ namespace FileUploadApi.Services.ServicePost.Implementation
             var hostAddress = _httpContext.HttpContext.Request.Scheme + "://" + _httpContext.HttpContext.Request.Host.Value;
             var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var post = await _postRepo.FindAsync(p => p.UserId == userId && p.Id == id);
+            if (post != null)
+            {
+                var postModel = _mapper.Map<PostModel>(post);
+                postModel.ImageUrl = Path.Combine(hostAddress, "StaticFiles", postModel.ImageUrl);
+                return postModel;
+            }
+            throw new Exception("Not Found");
+        }
+        public async Task<PostModel> GetPostByTitle(string title)
+        {
+            var hostAddress = _httpContext.HttpContext.Request.Scheme + "://" + _httpContext.HttpContext.Request.Host.Value;
+            var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var post = await _postRepo.FindAsync(p => p.UserId == userId && p.TitleUrl == title);
             if (post != null)
             {
                 var postModel = _mapper.Map<PostModel>(post);
