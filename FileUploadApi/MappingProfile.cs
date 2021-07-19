@@ -16,6 +16,11 @@ namespace FileUploadApi
             CreateMap<UserForRegistrationDto, User>()
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
             CreateMap<LoginActivityModel, LoginActivity>();
+            CreateMap<ExtensionModel, Extension>().ReverseMap();
+            CreateMap<FileModel, File>().ReverseMap();
+            CreateMap<CategoryModel, Category>().ReverseMap();
+            CreateMap<PostModel, Post>().ReverseMap();
+            CreateMap<UserModel, User>().ReverseMap();
         }
     }
 }

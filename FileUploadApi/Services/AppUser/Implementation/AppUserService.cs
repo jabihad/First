@@ -20,6 +20,7 @@ namespace FileUploadApi.Services.AppUser.Implementation
         public string GetuserId()
         {
             return _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            //return _httpContext.HttpContext.User?.Id
         }
 
         public string GetuserName()
@@ -28,7 +29,8 @@ namespace FileUploadApi.Services.AppUser.Implementation
         }
         public string GetuserEmail()
         {
-            return _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.Email);
+            //return _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.Email);
+            return _httpContext.HttpContext.User?.Identity.Name;
         }
     }
 }

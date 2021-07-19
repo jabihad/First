@@ -3,7 +3,7 @@ using System.Linq;
 using AutoMapper;
 using X.PagedList;
 
-namespace BergerMsfaApi.Extensions
+namespace FileUploadApi.Extensions
 {
     public static class AutoMapperExtensions
     {

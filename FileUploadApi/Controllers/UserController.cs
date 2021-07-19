@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Entities;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 
-namespace UploadFilesServer.Controllers
+namespace FileUploadApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class UsersController : ControllerBase
     {
         private readonly RepositoryContext _context;
@@ -19,7 +21,7 @@ namespace UploadFilesServer.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllUsers")]
         public IActionResult GetAllUsers()
         {
             try

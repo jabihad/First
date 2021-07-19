@@ -30,6 +30,15 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Http;
 using FileUploadApi.Services.Report.Interfaces;
 using FileUploadApi.Services.Report.Implementation;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using FileUploadApi.Services.Admin.Interfaces;
+using FileUploadApi.Services.Admin.Implementation;
+using FileUploadApi.Services.ServiceCategoy.Interfaces;
+using FileUploadApi.Services.ServiceCategoy.Implementation;
+using FileUploadApi.Services.ServicePost.Interfaces;
+using FileUploadApi.Services.ServicePost.Implementation;
 
 namespace FileUploadApi
 {
@@ -65,7 +74,7 @@ namespace FileUploadApi
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<RepositoryContext>();
 
-            /*var jwtSettings = Configuration.GetSection("JwtSettings");
+            var jwtSettings = Configuration.GetSection("JwtSettings");
             services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -83,17 +92,30 @@ namespace FileUploadApi
                     ValidAudience = jwtSettings.GetSection("validAudience").Value,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetSection("securityKey").Value))
                 };
-            });*/
+            });
+
+            //services.Configure<IISServerOptions>(options =>
+            //{
+            //    options.MaxRequestBodySize = null;
+            //});
+            //services.Configure<KestrelServerOptions>(options =>
+            //{
+            //    options.Limits.MaxRequestBodySize = null;
+            //});
+
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-            //services.AddScoped<JwtHandler>();
+            services.AddScoped<JwtHandler>();
 
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IPostService, PostService>();
 
-            services.AddHttpContextAccessor(); 
+            services.AddHttpContextAccessor();
             services.AddSession();
 
             services.AddControllers();
@@ -111,7 +133,11 @@ namespace FileUploadApi
 
             app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"StaticFiles")),
+                RequestPath = new PathString("/StaticFiles")
+            });
 
             app.UseCors("CorsPolicy");
 
