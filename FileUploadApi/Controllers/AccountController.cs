@@ -61,6 +61,10 @@ namespace FileUploadApi.Controllers
 
                 return BadRequest(new RegistrationResponseDto { Errors = errors });
             }
+            else
+            {
+                var res = await _userManager.AddToRoleAsync(user, "customer");
+            }
 
             return StatusCode(201);
         }

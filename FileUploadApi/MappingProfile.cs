@@ -20,6 +20,7 @@ namespace FileUploadApi
             CreateMap<FileModel, File>().ReverseMap();
             CreateMap<CategoryModel, Category>().ReverseMap();
             CreateMap<PostModel, Post>().ReverseMap();
+            CreateMap<UserModel, User>().ReverseMap();
         }
     }
 }

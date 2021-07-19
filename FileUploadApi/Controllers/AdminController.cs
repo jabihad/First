@@ -44,26 +44,12 @@ namespace FileUploadApi.Controllers
         [Route("GetExtension")]
         public async Task<IEnumerable<Extension>> GetExtension()
         {
-            //var result = await _extension.GetAllIncludeAsync(
-            //                             x => x,
-            //                             null,
-            //                             x => x.OrderBy(y => y.ExtensionName),
-            //                             null,
-            //                             true
-            //                             );
             var result = await _adminService.GetExtension();
             return result;
         }
         [HttpPost("CreateExtension")]
         public async Task<IActionResult> CreateExtension([FromBody] ExtensionModel extensionModel)
         {
-            //var res = _mapper.Map<Extension>(extensionModel);
-            //var chk = await IsExist(extensionModel.ExtensionName);
-            //if (!chk)
-            //{
-            //    await _extension.CreateAsync(res);
-            //}
-            //return StatusCode(200);
             try
             {
                 var res = await _adminService.CreateExtension(extensionModel);
@@ -73,21 +59,10 @@ namespace FileUploadApi.Controllers
             {
                 return Ok(new { message = "Can't Create Extension" });
             }
-
-
-            //return StatusCode(200);
         }
-        //private async Task<bool> IsExist(string extension)
-        //{
-        //    var ext = await _extension.FindAsync(e => e.ExtensionName.ToLower() == extension.ToLower());
-        //    return ext == null ? false : true;
-        //}
         [HttpGet("GetExtensionById/{id}")]
         public async Task<ExtensionModel> GetExtensionById(int id)
         {
-            //var model = await _extension.FindAsync(f => f.Id == id);
-            //var res = _mapper.Map<ExtensionModel>(model);
-            //return res;
             var res = await _adminService.GetExtensionById(id);
             return res;
 
@@ -96,20 +71,12 @@ namespace FileUploadApi.Controllers
         [HttpPost("EditExtension")]
         public async Task<IActionResult> EditExtension([FromBody] ExtensionModel extensionModel)
         {
-            //var ext = await _extension.FindAsync(e => e.Id == extensionModel.Id);
-            //ext.ExtensionName = extensionModel.ExtensionName;
-            //ext.MaxSize = (double)extensionModel.MaxSize;
-
-            //await _extension.UpdateAsync(ext);
             var res = await _adminService.EditExtension(extensionModel);
-
             return StatusCode(200);
         }
         [HttpPost("DeleteExtension")]
         public async Task<int> DeleteExtension([FromBody] ExtensionModel extensionModel)
         {
-            //var id = extensionModel.Id;
-            //return await _extension.DeleteAsync(e => e.Id == id);
             return await _adminService.DeleteExtension(extensionModel);
         }
         //[HttpPost("DeleteFiles")]
@@ -130,18 +97,60 @@ namespace FileUploadApi.Controllers
         [HttpGet("FileList")]
         public async Task<IEnumerable<FileModel>> FileList()
         {
-            //var file = await _file.GetAllAsync();
-            //var fileModel = _mapper.Map<IEnumerable<FileModel>>(file);
             var fileModel = await _adminService.FileList();
             return fileModel;
         }
         [HttpPost("DeleteFile")]
         public async Task<bool> DeleteFile([FromBody] FileModel fileModel)
         {
-            //var id = fileModel.Id;
-            //var res = await _file.DeleteAsync(f => f.Id == id);
             var res = await _adminService.DeleteFile(fileModel);
             return true;
+        }
+        [HttpPost("CreateUser")]
+        public async Task<IActionResult> CreateUser([FromBody] UserModel userModel)
+        {
+            var res = await _adminService.CreateUser(userModel);
+            if (res)
+            {
+                return Ok(new { message = "User is Created" });
+            }
+            return Ok(new { message = "User is not created" });
+        }
+
+        [HttpGet("GetAllUsers")]
+        public async Task<IEnumerable<UserModel>> GetAllUsers()
+        {
+            var res = await _adminService.GetAllUsers();
+            return res;
+        }
+        [HttpGet("GetUserById/{id}")]
+        public async Task<UserModel> GetUserById(string id)
+        {
+            var res = await _adminService.GetUserById(id);
+            return res;
+        }
+
+
+        [HttpGet("GetAllRoles")]
+        public IEnumerable<IdentityRole> GetAllRoles()
+        {
+            var res = _adminService.GetAllRoles();
+            return res;
+        }
+        [HttpPost("DeleteUser")]
+        public async Task<IActionResult> DeleteUser([FromBody] UserModel userModel)
+        {
+            var res = await _adminService.DeleteUser(userModel);
+            if (res == true)
+                return Ok(new { message = "User is Deleted" });
+
+            return Ok(new { message = "User is not deleted" });
+        }
+        [HttpPost("UpdateUser")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserModel userModel)
+        {
+            var res = await _adminService.UpdateUser(userModel);
+            return StatusCode(200);
         }
     }
 }
