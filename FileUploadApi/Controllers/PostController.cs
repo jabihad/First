@@ -123,6 +123,76 @@ namespace FileUploadApi.Controllers
                 return Ok(new { message = "Can't Update Post" });
             }
         }
-
+        [Authorize]
+        [HttpPost("CreateComment")]
+        public async Task<IActionResult> CreateComment([FromBody] CommentModel commentModel)
+        {
+            try
+            {
+                var res = await _postSvc.CreateComment(commentModel);
+                return Ok(new { message = "Comment Created" });
+            }
+            catch
+            {
+                return Ok(new { message = "Can't Create Comment" });
+            }
+        }
+        [Authorize]
+        [HttpPost("DeleteComment/{id}")]
+        public async Task<IActionResult> DeleteComment(int id)
+        {
+            try
+            {
+                var res = await _postSvc.DeleteComment(id);
+                return Ok(new { message = "Comment Deleted" });
+            }
+            catch
+            {
+                return Ok(new { message = "Can't Deletes Comment" });
+            }
+        }
+        [Authorize]
+        [HttpGet("GetAllComment/{postTitleUrl}")]
+        public async Task<IActionResult> GetAllComment(string postTitleUrl)
+        {
+            try
+            {
+                var res = await _postSvc.GetAllComment(postTitleUrl);
+                return Ok(res);
+            }
+            catch
+            {
+                return Ok(new { message = "Can't Get Comment" });
+            }
+        }
+        [Authorize]
+        [HttpPost("UpdateComment")]
+        public async Task<IActionResult> UpdateComment([FromBody] CommentModel commentModel)
+        {
+            try
+            {
+                var res = await _postSvc.UpdateComment(commentModel);
+                return Ok(res);
+            }
+            catch
+            {
+                return Ok(new { message = "Can't Update Post" });
+            }
+        }
+        [Authorize]
+        [HttpGet("GetCommentById/{id}")]
+        public async Task<IActionResult> GetCommentById(int id)
+        {
+            try
+            {
+                var res = await _postSvc.GetCommentById(id);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                //return ExceptionResult(ex);
+                return Ok(new { message = "Can't get Comment" });
+            }
+        }
     }
 }

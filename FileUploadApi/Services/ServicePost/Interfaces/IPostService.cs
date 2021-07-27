@@ -16,5 +16,10 @@ namespace FileUploadApi.Services.ServicePost.Interfaces
         Task<List<ResultModel>> GetAllPostByCategory();
         Task<bool> UpdatePost(PostModel postModel);
         Task<int> DeletePost(int id);
+        Task<int> CreateComment(CommentModel commentModel);
+        Task<int> DeleteComment(int id);
+        Task<IEnumerable<CommentModel>> GetAllComment(string postTitleUrl);
+        Task<bool> UpdateComment(CommentModel commentModel);
+        Task<CommentModel> GetCommentById(int id);
     }
 }
