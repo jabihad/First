@@ -12,5 +12,6 @@ namespace Entities.Models
         public ICollection<LoginActivity> LoginActivities { get; set; }
         public ICollection<File> Files { get; set; }
         public ICollection<Post> Posts { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

@@ -16,5 +16,6 @@ namespace Entities.Models
         public Category Category { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

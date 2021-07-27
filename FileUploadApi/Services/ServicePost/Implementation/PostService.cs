@@ -4,6 +4,7 @@ using FileUploadApi.Model;
 using FileUploadApi.Repositories;
 using FileUploadApi.Services.ServicePost.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,14 +18,18 @@ namespace FileUploadApi.Services.ServicePost.Implementation
     public class PostService : IPostService
     {
         private readonly IRepository<Post> _postRepo;
+        private readonly UserManager<User> _userManager;
+        private readonly IRepository<Comment> _commentRepo;
         private readonly IRepository<Extension> _extensionRepo;
         private readonly IRepository<Category> _categoryRepo;
         private readonly IHttpContextAccessor _httpContext;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public PostService(IRepository<Post> postRepo, IRepository<Extension> extensionRepo, IRepository<Category> categoryRepo, IHttpContextAccessor httpContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public PostService(IRepository<Post> postRepo, UserManager<User> userManager, IRepository<Comment> commentRepo, IRepository<Extension> extensionRepo, IRepository<Category> categoryRepo, IHttpContextAccessor httpContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _postRepo = postRepo;
+            _userManager = userManager;
+            _commentRepo = commentRepo;
             _extensionRepo = extensionRepo;
             _categoryRepo = categoryRepo;
             _httpContext = httpContext;
@@ -133,7 +138,8 @@ namespace FileUploadApi.Services.ServicePost.Implementation
             List<ResultModel> resultModelList = new List<ResultModel>();
             ResultModel resultModel = new ResultModel();
             var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            var posts = await _postRepo.FindAllAsync(p => p.UserId == userId);
+            //var posts = await _postRepo.FindAllAsync(p => p.UserId == userId);
+            var posts = await _postRepo.GetAllAsync();
             var postModel = _mapper.Map<IEnumerable<PostModel>>(posts);
             var res = postModel.GroupBy(c => c.CategoryId).ToList();
             var hostAddress = _httpContextAccessor.HttpContext.Request.Scheme + "://" + _httpContextAccessor.HttpContext.Request.Host.Value;
@@ -181,7 +187,8 @@ namespace FileUploadApi.Services.ServicePost.Implementation
         {
             var hostAddress = _httpContext.HttpContext.Request.Scheme + "://" + _httpContext.HttpContext.Request.Host.Value;
             var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            var post = await _postRepo.FindAsync(p => p.UserId == userId && p.TitleUrl == title);
+            //var post = await _postRepo.FindAsync(p => p.UserId == userId && p.TitleUrl == title);
+            var post = await _postRepo.FindAsync(p => p.TitleUrl == title);
             if (post != null)
             {
                 var postModel = _mapper.Map<PostModel>(post);
@@ -201,6 +208,72 @@ namespace FileUploadApi.Services.ServicePost.Implementation
 
             await _postRepo.UpdateAsync(post);
             return true;
+        }
+        public async Task<int> CreateComment(CommentModel commentModel)
+        {
+            try
+            {
+                var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var post = await _postRepo.FindAsync(p => p.TitleUrl == commentModel.PostTitleUrl);
+                var user = await _userManager.FindByIdAsync(userId);
+                var comment = new Comment
+                {
+                    Text = commentModel.Text,
+                    PostId = post.Id,
+                    Username = user.FirstName,
+                    UserId = userId,
+                    CreatedTime = DateTime.Now.ToString("dddd, dd MMMM yyyy HH:mm:ss")
+                };
+                var res = await _commentRepo.CreateAsync(comment);
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+
+        }
+        public async Task<int> DeleteComment(int id)
+        {
+            try
+            {
+                var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var res = await _commentRepo.DeleteAsync(c => c.Id == id && c.UserId ==userId);
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+        public async Task<IEnumerable<CommentModel>> GetAllComment(string postTitleUrl)
+        {
+            var post = await _postRepo.FindAsync(p => p.TitleUrl == postTitleUrl);
+            var res = await _commentRepo.FindAllAsync(c => c.PostId == post.Id);
+            var resModel = _mapper.Map<IEnumerable<CommentModel>>(res);
+            return resModel.OrderByDescending(r => r.CreatedTime);
+        }
+        public async Task<bool> UpdateComment(CommentModel commentModel)
+        {
+            var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var comment = await _commentRepo.FindAsync(c => c.Id == commentModel.Id && c.UserId == userId);
+
+            comment.Text = commentModel.Text;
+
+            await _commentRepo.UpdateAsync(comment);
+            return true;
+        }
+        public async Task<CommentModel> GetCommentById(int id)
+        {
+            var userId = _httpContext.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var comment = await _commentRepo.FindAsync(c => c.Id == id && c.UserId == userId);
+            if (comment != null)
+            {
+                var commentModel = _mapper.Map<CommentModel>(comment);
+                return commentModel;
+            }
+            throw new Exception("Not Found");
         }
     }
 
